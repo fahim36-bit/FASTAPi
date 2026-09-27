@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker API — Module 16 Mid Term (FastAPI)</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root { --navy: #1f3864; --navy-light: #2f5597; }
+  html { scroll-behavior: smooth; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  .badge { display:inline-block; min-width:68px; text-align:center; font-weight:700; font-size:12px; letter-spacing:.03em; padding:4px 8px; border-radius:6px; border:1px solid transparent; }
+  .badge-get { background:#e8f0fe; color:#1a56b8; border-color:#c7d9f7; }
+  .badge-post { background:#e6f4ea; color:#1a7f37; border-color:#c3e6cd; }
+  .badge-put { background:#fdf1dc; color:#b26a00; border-color:#f7dcae; }
+  .badge-delete { background:#fde8e8; color:#c0392b; border-color:#f7c5c5; }
+  .file-btn { width:100%; text-align:left; padding:6px 10px; border-radius:6px; font-size:13px; color:#334155; cursor:pointer; }
+  .file-btn:hover { background:#eef2f9; }
+  .file-btn.active { background:var(--navy); color:#fff; }
+  #code-pre code { display:block; background:#0d1117; color:#c9d1d9; padding:1.25rem 1.5rem; font-size:13px; line-height:1.65; white-space:pre; overflow-x:auto; }
+  .step-num { width:34px; height:34px; border-radius:9999px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
+  .cmd { background:#0f172a; color:#e2e8f0; border-radius:8px; padding:10px 44px 10px 14px; font-size:13px; overflow-x:auto; white-space:pre; }
+  .cmd-wrap { position:relative; }
+  .copy-cmd { position:absolute; top:6px; right:6px; font-size:11px; padding:3px 8px; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; cursor:pointer; }
+  .copy-cmd:hover { background:#334155; color:#fff; }
+  table.spec { width:100%; border-collapse:separate; border-spacing:0; }
+  table.spec th { background:var(--navy); color:#fff; text-align:left; padding:10px 14px; font-weight:600; font-size:14px; }
+  table.spec td { padding:10px 14px; border-top:1px solid #e2e8f0; vertical-align:top; font-size:14px; }
+  table.spec tr:nth-child(even) td { background:#f6f8fc; }
+  .chip { font-size:12px; padding:4px 10px; border-radius:9999px; background:#eef2f9; color:#1f3864; border:1px solid #d7e0f0; font-weight:500; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-weight:600; font-size:14px; cursor:pointer; transition:all .15s; }
+  .btn-primary { background:var(--navy); color:#fff; }
+  .btn-primary:hover { background:var(--navy-light); }
+  .btn-secondary { background:#fff; color:var(--navy); border:1px solid #cbd5e1; }
+  .btn-secondary:hover { border-color:var(--navy); background:#f6f8fc; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; padding:10px 18px; border-radius:10px; font-size:14px; opacity:0; pointer-events:none; transition:all .25s; z-index:50; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ===== Top bar ===== -->
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+    <a href="#top" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-[#1f3864] text-white flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="font-bold text-[#1f3864] leading-tight">Expense Tracker API</div>
+        <div class="text-xs text-slate-500">Module 16 — Mid Term · FastAPI</div>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <a href="#quick-start" class="hover:text-[#1f3864]">Quick Start</a>
+      <a href="#files" class="hover:text-[#1f3864]">Project Files</a>
+      <a href="#endpoints" class="hover:text-[#1f3864]">Endpoints</a>
+      <a href="#checklist" class="hover:text-[#1f3864]">Marks Checklist</a>
+      <a href="#deploy" class="hover:text-[#1f3864]">Deploy</a>
+    </nav>
+    <button class="btn btn-primary zip-trigger !py-2 !px-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span class="hidden sm:inline">Download .zip</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section id="top" class="bg-white border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 py-12 text-center">
+    <p class="text-sm font-semibold tracking-wide text-slate-500 uppercase">Module 16 — Mid Term · Total Marks: 100</p>
+    <h1 class="mt-2 text-4xl md:text-5xl font-extrabold text-[#1f3864]">Expense Tracker API</h1>
+    <p class="mt-4 max-w-2xl mx-auto text-slate-600 text-lg">
+      A simple, complete FastAPI project: JWT login, SQLAlchemy + PostgreSQL, per-user transactions,
+      filtering and Pytest. Every file is on this page — copy them one by one or download the zip.
+    </p>
+    <div class="mt-5 flex flex-wrap justify-center gap-2">
+      <span class="chip">FastAPI</span><span class="chip">CRUD</span><span class="chip">SQLAlchemy</span>
+      <span class="chip">PostgreSQL</span><span class="chip">JWT Authentication</span><span class="chip">Authorization</span>
+      <span class="chip">Pydantic Validation</span><span class="chip">Routers</span><span class="chip">Query Parameters</span><span class="chip">Pytest</span>
+    </div>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href="#files" class="btn btn-primary">View the code</a>
+      <button class="btn btn-secondary zip-trigger">Download project (.zip)</button>
+    </div>
+    <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><div class="text-2xl font-extrabold text-[#1f3864]">8</div><div class="text-xs text-slate-500 mt-1">API endpoints</div></div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><div class="text-2xl font-extrabold text-[#1f3864]">9</div><div class="text-xs text-slate-500 mt-1">Python files</div></div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><div class="text-2xl font-extrabold text-[#1f3864]">6</div><div class="text-xs text-slate-500 mt-1">Pytest test cases</div></div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><div class="text-2xl font-extrabold text-[#1f3864]">2</div><div class="text-xs text-slate-500 mt-1">DB tables (User ↔ Transaction)</div></div>
+    </div>
+  </div>
+</section>
+
+<main class="max-w-6xl mx-auto px-4">
+
+  <!-- ===== Quick start ===== -->
+  <section id="quick-start" class="py-14 scroll-mt-20">
+    <h2 class="text-2xl md:text-3xl font-bold text-[#1f3864]">Quick Start</h2>
+    <p class="mt-2 text-slate-600">Six small steps from zero to a running API.</p>
+
+    <div class="mt-8 grid md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">1</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Get the files</h3>
+          <p class="text-sm text-slate-600 mt-1">Download the zip (button above) or create this folder structure and paste each file from the <a href="#files" class="text-[#2f5597] underline">Project Files</a> section.</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">expense_tracker/
+├── main.py
+├── database.py
+├── models.py
+├── schemas.py
+├── security.py
+├── routers/
+│   ├── __init__.py
+│   ├── auth.py
+│   └── transactions.py
+├── tests/
+│   └── test_transactions.py
+├── requirements.txt
+├── pytest.ini
+├── .env.example
+├── .gitignore
+└── README.md</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">2</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Install dependencies</h3>
+          <p class="text-sm text-slate-600 mt-1">Use a virtual environment (Python 3.10+).</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">cd expense_tracker
+python -m venv venv
+venv\Scripts\activate          # Windows
+source venv/bin/activate       # macOS / Linux
+pip install -r requirements.txt</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">3</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Configure the database</h3>
+          <p class="text-sm text-slate-600 mt-1">Create a <span class="mono">.env</span> file (copy <span class="mono">.env.example</span>). If <span class="mono">DATABASE_URL</span> is missing, the app falls back to a local SQLite file so you can still try it.</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">DATABASE_URL=postgresql://user:password@host:5432/dbname
+SECRET_KEY=any-long-random-string</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">4</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Run the server</h3>
+          <p class="text-sm text-slate-600 mt-1">Tables are created automatically on startup. Then open the interactive docs.</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">uvicorn main:app --reload
+# → http://127.0.0.1:8000/docs</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">5</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Run the tests</h3>
+          <p class="text-sm text-slate-600 mt-1">6 Pytest cases (create, get all, get one, update, delete, unauthorized). They use a local <span class="mono">test.db</span>, never your real database.</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">pytest -v</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5 flex gap-4">
+        <div class="step-num">6</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold">Push to GitHub &amp; deploy on Render</h3>
+          <p class="text-sm text-slate-600 mt-1">Commit everything (except <span class="mono">.env</span>) and follow the <a href="#deploy" class="text-[#2f5597] underline">Deploy</a> section.</p>
+          <div class="cmd-wrap mt-3"><pre class="cmd mono">git init
+git add .
+git commit -m "Expense Tracker API"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/expense-tracker-api.git
+git push -u origin main</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth flow -->
+    <div class="mt-8 bg-white rounded-xl border border-slate-200 p-5">
+      <h3 class="font-semibold text-[#1f3864]">How authentication works</h3>
+      <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+        <div class="rounded-lg bg-slate-50 border border-slate-200 p-4"><div class="text-xs font-bold text-slate-400 uppercase">Step 1</div><div class="font-semibold mt-1">Register</div><div class="text-slate-600 mt-1"><span class="badge badge-post">POST</span> <span class="mono">/auth/register</span> — password is hashed with bcrypt before saving.</div></div>
+        <div class="rounded-lg bg-slate-50 border border-slate-200 p-4"><div class="text-xs font-bold text-slate-400 uppercase">Step 2</div><div class="font-semibold mt-1">Login</div><div class="text-slate-600 mt-1"><span class="badge badge-post">POST</span> <span class="mono">/auth/login</span> — returns <span class="mono">access_token</span> + <span class="mono">token_type</span> (JWT).</div></div>
+        <div class="rounded-lg bg-slate-50 border border-slate-200 p-4"><div class="text-xs font-bold text-slate-400 uppercase">Step 3</div><div class="font-semibold mt-1">Send the token</div><div class="text-slate-600 mt-1">Header <span class="mono">Authorization: Bearer &lt;token&gt;</span>. In Swagger just click <b>Authorize</b>.</div></div>
+        <div class="rounded-lg bg-slate-50 border border-slate-200 p-4"><div class="text-xs font-bold text-slate-400 uppercase">Step 4</div><div class="font-semibold mt-1">Own data only</div><div class="text-slate-600 mt-1">Every <span class="mono">/transactions</span> query is filtered by <span class="mono">owner_id == current_user.id</span>.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Project files ===== -->
+  <section id="files" class="py-14 border-t border-slate-200 scroll-mt-20">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-[#1f3864]">Project Files</h2>
+        <p class="mt-2 text-slate-600">Click a file to view it. Copy or download each one, or grab everything as a zip.</p>
+      </div>
+      <button class="btn btn-secondary zip-trigger">Download all (.zip)</button>
+    </div>
+
+    <!-- mobile select -->
+    <select id="file-select" class="md:hidden mt-6 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 mono text-sm"></select>
+
+    <div class="mt-6 grid md:grid-cols-[230px_1fr] gap-5">
+      <aside class="hidden md:block">
+        <div id="file-tree" class="sticky top-20 bg-white rounded-xl border border-slate-200 p-2"></div>
+      </aside>
+
+      <div class="min-w-0 bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <div class="min-w-0">
+            <div id="file-name" class="mono font-semibold text-[#1f3864] truncate">main.py</div>
+            <div id="file-desc" class="text-xs text-slate-500"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="file-lines" class="text-xs text-slate-400 mr-1"></span>
+            <button id="copy-file" class="btn btn-secondary !py-1.5 !px-3 !text-xs">Copy</button>
+            <button id="download-file" class="btn btn-primary !py-1.5 !px-3 !text-xs">Download</button>
+          </div>
+        </div>
+        <pre id="code-pre" class="m-0 max-h-[75vh] overflow-auto"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Endpoints ===== -->
+  <section id="endpoints" class="py-14 border-t border-slate-200 scroll-mt-20">
+    <h2 class="text-2xl md:text-3xl font-bold text-[#1f3864]">API Endpoints</h2>
+    <p class="mt-2 text-slate-600">All <span class="mono">/transactions</span> routes require a JWT (🔒). Filter route is declared before <span class="mono">/{transaction_id}</span> so "filter" is never read as an id.</p>
+
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 overflow-x-auto">
+      <table class="spec">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>What it does</th><th class="text-right">Marks</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-post">POST</span></td><td class="mono">/auth/register</td><td>—</td><td>Validate with Pydantic, hash password, save user, never return the hash</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td class="mono">/auth/login</td><td>—</td><td>Verify username &amp; password, return <span class="mono">access_token</span> + <span class="mono">token_type</span></td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-post">POST</span></td><td class="mono">/transactions</td><td>🔒</td><td>Create; owner is the logged-in user; <span class="mono">amount &gt; 0</span>, <span class="mono">type</span> ∈ income | expense</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td class="mono">/transactions</td><td>🔒</td><td>All transactions of the logged-in user only</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td class="mono">/transactions/{transaction_id}</td><td>🔒</td><td>One transaction; 404 if missing or owned by someone else</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-put">PUT</span></td><td class="mono">/transactions/{transaction_id}</td><td>🔒</td><td>Update own transaction; 404 with a clear message if not found</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td><span class="badge badge-delete">DELETE</span></td><td class="mono">/transactions/{transaction_id}</td><td>🔒</td><td>Delete; 200 + confirmation message, or 404</td><td class="text-right font-semibold">5</td></tr>
+          <tr><td><span class="badge badge-get">GET</span></td><td class="mono">/transactions/filter</td><td>🔒</td><td>Query params: <span class="mono">type</span>, <span class="mono">category</span>, <span class="mono">minimum_amount</span>, <span class="mono">maximum_amount</span></td><td class="text-right font-semibold">15</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 grid md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold text-[#1f3864]">Example request body — create / update</h3>
+        <div class="cmd-wrap mt-3"><pre class="cmd mono">{
+  "title": "Lunch",
+  "amount": 250,
+  "type": "expense",
+  "category": "Food",
+  "date": "2025-01-15"
+}</pre><button class="copy-cmd">Copy</button></div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold text-[#1f3864]">Example filter requests</h3>
+        <div class="cmd-wrap mt-3"><pre class="cmd mono">GET /transactions/filter?type=expense&category=Food
+GET /transactions/filter?minimum_amount=100&maximum_amount=5000
+GET /transactions/filter?type=income</pre><button class="copy-cmd">Copy</button></div>
+        <p class="text-xs text-slate-500 mt-3">Every parameter is optional; combine any of them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Checklist ===== -->
+  <section id="checklist" class="py-14 border-t border-slate-200 scroll-mt-20">
+    <h2 class="text-2xl md:text-3xl font-bold text-[#1f3864]">Marks Checklist</h2>
+    <p class="mt-2 text-slate-600">Where each requirement from the assignment is implemented.</p>
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 overflow-x-auto">
+      <table class="spec">
+        <thead><tr><th>Task</th><th>Requirement</th><th>Implemented in</th><th class="text-right">Marks</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">1</td><td>Authentication &amp; JWT (register, login, token generation)</td><td><span class="mono">routers/auth.py</span>, <span class="mono">security.py</span> (bcrypt + PyJWT), <span class="mono">schemas.UserCreate / UserResponse / Token</span></td><td class="text-right font-semibold">20</td></tr>
+          <tr><td class="font-semibold">2</td><td>Transaction CRUD operations (create, get all, get one, update, delete)</td><td><span class="mono">routers/transactions.py</span> — every route uses <span class="mono">Depends(get_current_user)</span>; 404s via <span class="mono">get_owned_transaction()</span></td><td class="text-right font-semibold">45</td></tr>
+          <tr><td class="font-semibold">3</td><td>Database relationship &amp; SQLAlchemy (User ↔ Transaction, ownership checks)</td><td><span class="mono">models.py</span> — <span class="mono">ForeignKey("users.id")</span> + <span class="mono">relationship()</span>; <span class="mono">database.py</span> engine/session</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td class="font-semibold">4</td><td>Filtering with query parameters</td><td><span class="mono">filter_transactions()</span> in <span class="mono">routers/transactions.py</span></td><td class="text-right font-semibold">15</td></tr>
+          <tr><td class="font-semibold">5</td><td>Pytest (minimum 5 test cases)</td><td><span class="mono">tests/test_transactions.py</span> — 6 tests</td><td class="text-right font-semibold">10</td></tr>
+          <tr><td colspan="3" class="text-right font-bold text-[#1f3864]">Total</td><td class="text-right font-bold text-[#1f3864]">100</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 p-5">
+      <h3 class="font-semibold text-[#1f3864]">Validation rules (Pydantic)</h3>
+      <ul class="mt-3 grid sm:grid-cols-2 gap-2 text-sm text-slate-700 list-disc pl-5">
+        <li><span class="mono">amount</span> must be &gt; 0 → <span class="mono">Field(gt=0)</span></li>
+        <li><span class="mono">type</span> must be <span class="mono">"income"</span> or <span class="mono">"expense"</span> → <span class="mono">Literal[...]</span></li>
+        <li><span class="mono">email</span> must be a valid email → <span class="mono">EmailStr</span></li>
+        <li><span class="mono">password</span> 6–72 characters (bcrypt limit) → <span class="mono">Field(min_length=6, max_length=72)</span></li>
+        <li>Response models never include <span class="mono">hashed_password</span></li>
+        <li>Invalid input returns <span class="mono">422</span> automatically — the app never crashes</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Deploy ===== -->
+  <section id="deploy" class="py-14 border-t border-slate-200 scroll-mt-20">
+    <h2 class="text-2xl md:text-3xl font-bold text-[#1f3864]">Deploy on Render</h2>
+    <p class="mt-2 text-slate-600">Free tier is enough for the assignment.</p>
+
+    <div class="mt-6 grid md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <ol class="space-y-4 text-sm text-slate-700">
+          <li class="flex gap-3"><div class="step-num !w-7 !h-7 text-xs">1</div><div><b>Create a PostgreSQL database.</b> Render → <i>New → PostgreSQL</i> (or use Neon / Supabase). Copy the connection URL.</div></li>
+          <li class="flex gap-3"><div class="step-num !w-7 !h-7 text-xs">2</div><div><b>Create the Web Service.</b> Render → <i>New → Web Service</i> → connect your GitHub repo.</div></li>
+          <li class="flex gap-3"><div class="step-num !w-7 !h-7 text-xs">3</div><div><b>Set the commands</b> (see the right).</div></li>
+          <li class="flex gap-3"><div class="step-num !w-7 !h-7 text-xs">4</div><div><b>Add environment variables</b> <span class="mono">DATABASE_URL</span> and <span class="mono">SECRET_KEY</span> (optionally <span class="mono">PYTHON_VERSION=3.12.7</span>).</div></li>
+          <li class="flex gap-3"><div class="step-num !w-7 !h-7 text-xs">5</div><div><b>Deploy</b> and open <span class="mono">https://your-app.onrender.com/docs</span>. Put this URL in your README.</div></li>
+        </ol>
+      </div>
+      <div class="space-y-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="text-xs font-bold text-slate-400 uppercase">Build command</div>
+          <div class="cmd-wrap mt-2"><pre class="cmd mono">pip install -r requirements.txt</pre><button class="copy-cmd">Copy</button></div>
+          <div class="text-xs font-bold text-slate-400 uppercase mt-4">Start command</div>
+          <div class="cmd-wrap mt-2"><pre class="cmd mono">uvicorn main:app --host 0.0.0.0 --port $PORT</pre><button class="copy-cmd">Copy</button></div>
+        </div>
+        <div class="bg-amber-50 rounded-xl border border-amber-200 p-5 text-sm text-amber-900">
+          <div class="font-semibold">Common mistakes (already handled in this code)</div>
+          <ul class="list-disc pl-5 mt-2 space-y-1">
+            <li>Render gives <span class="mono">postgres://</span> URLs — <span class="mono">database.py</span> rewrites them to <span class="mono">postgresql://</span>.</li>
+            <li><span class="mono">/transactions/filter</span> must be declared before <span class="mono">/transactions/{transaction_id}</span>.</li>
+            <li><span class="mono">python-multipart</span> is required for the login form (Swagger "Authorize" button).</li>
+            <li>Never commit <span class="mono">.env</span> — it is in <span class="mono">.gitignore</span>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="max-w-6xl mx-auto px-4 py-8 text-center text-sm text-slate-500">
+    Expense Tracker API · Module 16 Mid Term · FastAPI + SQLAlchemy + PostgreSQL + JWT + Pytest
+  </div>
+</footer>
+
+<div id="toast" class="toast">Copied!</div>
+
+<!-- =====================================================================
+     PROJECT SOURCE FILES (plain text, read by the page script)
+     ===================================================================== -->
+
+<script type="text/plain" data-file="main.py">
+from fastapi import FastAPI
+
+import models
+from database import engine
+from routers import auth, transactions
+
+# Create the database tables (if they do not exist yet)
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="Expense Tracker API",
+    description="Module 16 Mid Term — Personal Expense Tracker API built with "
+    "FastAPI, SQLAlchemy, PostgreSQL and JWT authentication.",
+    version="1.0.0",
+)
+
+# Routers
+app.include_router(auth.router)
+app.include_router(transactions.router)
+
+
+@app.get("/", tags=["Root"])
+def root():
+    return {"message": "Expense Tracker API is running. Open /docs to try it."}
+</script>
+
+<script type="text/plain" data-file="database.py">
+import os
+
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+load_dotenv()  # reads the .env file
+
+# Example: postgresql://user:password@host:5432/dbname
+# If DATABASE_URL is not set we fall back to a local SQLite file (handy for quick local testing).
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./expense_tracker.db")
+
+# Render / Heroku sometimes give "postgres://" but SQLAlchemy needs "postgresql://"
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# SQLite needs this extra argument, PostgreSQL does not
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+
+def get_db():
+    """Dependency: one database session per request, always closed afterwards."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+</script>
+
+<script type="text/plain" data-file="models.py">
+from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+from database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+
+    # One user -> many transactions
+    transactions = relationship("Transaction", back_populates="owner", cascade="all, delete-orphan")
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    type = Column(String, nullable=False)  # "income" or "expense"
+    category = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Many transactions -> one user
+    owner = relationship("User", back_populates="transactions")
+</script>
+
+<script type="text/plain" data-file="schemas.py">
+import datetime
+from typing import Literal, Optional
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+# type must be exactly one of these two values
+TransactionType = Literal["income", "expense"]
+
+
+# ---------- User schemas ----------
+class UserCreate(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=72)  # bcrypt limit is 72 bytes
+
+
+class UserResponse(BaseModel):
+    """What we send back - NO hashed_password here."""
+    id: int
+    username: str
+    email: EmailStr
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+# ---------- Transaction schemas ----------
+class TransactionCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=100)
+    amount: float = Field(gt=0, description="Must be a positive number")
+    type: TransactionType
+    category: str = Field(min_length=1, max_length=50)
+    date: datetime.date
+
+
+class TransactionUpdate(BaseModel):
+    """All fields optional - send only what you want to change."""
+    title: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    amount: Optional[float] = Field(default=None, gt=0)
+    type: Optional[TransactionType] = None
+    category: Optional[str] = Field(default=None, min_length=1, max_length=50)
+    date: Optional[datetime.date] = None
+
+
+class TransactionResponse(BaseModel):
+    id: int
+    title: str
+    amount: float
+    type: str
+    category: str
+    date: datetime.date
+    owner_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+</script>
+
+<script type="text/plain" data-file="security.py">
+import os
+from datetime import datetime, timedelta, timezone
+
+import bcrypt
+import jwt
+from dotenv import load_dotenv
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+
+import models
+from database import get_db
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "change-this-secret-key")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+# tokenUrl = the login endpoint. Swagger UI's "Authorize" button uses it.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+# ---------- Password hashing (bcrypt) ----------
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+
+# ---------- JWT ----------
+def create_access_token(data: dict) -> str:
+    payload = data.copy()
+    payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+# ---------- Dependency: the currently logged-in user ----------
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> models.User:
+    credentials_error = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_error
+    except jwt.InvalidTokenError:  # bad signature, expired, malformed ...
+        raise credentials_error
+
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if user is None:
+        raise credentials_error
+    return user
+</script>
+
+<script type="text/plain" data-file="routers/__init__.py"></script>
+
+<script type="text/plain" data-file="routers/auth.py">
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+
+import models
+import schemas
+import security
+from database import get_db
+
+router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+@router.post("/register", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
+def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    """Register a new user. The password is hashed before it is stored."""
+    if db.query(models.User).filter(models.User.username == user.username).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
+
+    if db.query(models.User).filter(models.User.email == user.email).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+    new_user = models.User(
+        username=user.username,
+        email=user.email,
+        hashed_password=security.hash_password(user.password),
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user  # response_model = UserResponse -> hashed_password is never returned
+
+
+@router.post("/login", response_model=schemas.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Login with username + password (form fields). Returns a JWT access token."""
+    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+
+    if not user or not security.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token = security.create_access_token({"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
+</script>
+
+<script type="text/plain" data-file="routers/transactions.py">
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
+
+import models
+import schemas
+from database import get_db
+from security import get_current_user
+
+# Every route below has "current_user = Depends(get_current_user)" -> protected by JWT
+router = APIRouter(prefix="/transactions", tags=["Transactions"])
+
+
+def get_owned_transaction(transaction_id: int, db: Session, user: models.User) -> models.Transaction:
+    """Return the transaction only if it exists AND belongs to this user, otherwise 404."""
+    transaction = (
+        db.query(models.Transaction)
+        .filter(models.Transaction.id == transaction_id, models.Transaction.owner_id == user.id)
+        .first()
+    )
+    if transaction is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Transaction with id {transaction_id} not found",
+        )
+    return transaction
+
+
+# 1. Create transaction ------------------------------------------------
+@router.post("", response_model=schemas.TransactionResponse, status_code=status.HTTP_201_CREATED)
+def create_transaction(
+    data: schemas.TransactionCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    transaction = models.Transaction(**data.model_dump(), owner_id=current_user.id)
+    db.add(transaction)
+    db.commit()
+    db.refresh(transaction)
+    return transaction
+
+
+# 2. Get all transactions (of the logged-in user only) -----------------
+@router.get("", response_model=list[schemas.TransactionResponse])
+def get_all_transactions(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    return db.query(models.Transaction).filter(models.Transaction.owner_id == current_user.id).all()
+
+
+# Filter transactions --------------------------------------------------
+# NOTE: this must be declared BEFORE "/{transaction_id}", otherwise
+# FastAPI would try to read the word "filter" as a transaction id.
+@router.get("/filter", response_model=list[schemas.TransactionResponse])
+def filter_transactions(
+    type: Optional[schemas.TransactionType] = Query(default=None, description="income or expense"),
+    category: Optional[str] = Query(default=None, description="e.g. Food"),
+    minimum_amount: Optional[float] = Query(default=None, ge=0),
+    maximum_amount: Optional[float] = Query(default=None, ge=0),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    query = db.query(models.Transaction).filter(models.Transaction.owner_id == current_user.id)
+
+    if type is not None:
+        query = query.filter(models.Transaction.type == type)
+    if category is not None:
+        query = query.filter(models.Transaction.category.ilike(category))  # case-insensitive
+    if minimum_amount is not None:
+        query = query.filter(models.Transaction.amount >= minimum_amount)
+    if maximum_amount is not None:
+        query = query.filter(models.Transaction.amount <= maximum_amount)
+
+    return query.all()
+
+
+# 3. Get transaction by id ---------------------------------------------
+@router.get("/{transaction_id}", response_model=schemas.TransactionResponse)
+def get_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    return get_owned_transaction(transaction_id, db, current_user)
+
+
+# 4. Update transaction ------------------------------------------------
+@router.put("/{transaction_id}", response_model=schemas.TransactionResponse)
+def update_transaction(
+    transaction_id: int,
+    data: schemas.TransactionUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    transaction = get_owned_transaction(transaction_id, db, current_user)
+
+    # only update the fields that were actually sent
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(transaction, field, value)
+
+    db.commit()
+    db.refresh(transaction)
+    return transaction
+
+
+# 5. Delete transaction ------------------------------------------------
+@router.delete("/{transaction_id}", status_code=status.HTTP_200_OK)
+def delete_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    transaction = get_owned_transaction(transaction_id, db, current_user)
+    db.delete(transaction)
+    db.commit()
+    return {"message": f"Transaction with id {transaction_id} deleted successfully"}
+</script>
+
+<script type="text/plain" data-file="tests/test_transactions.py">
+"""
+Run with:  pytest -v
+
+The tests use a local SQLite file (test.db), so the real PostgreSQL
+database is never touched.
+"""
+import os
+
+# Must be set BEFORE the app is imported (load_dotenv never overrides existing variables)
+os.environ["DATABASE_URL"] = "sqlite:///./test.db"
+
+import pytest
+from fastapi.testclient import TestClient
+
+from database import Base, engine
+from main import app
+
+client = TestClient(app)
+
+SAMPLE_TRANSACTION = {
+    "title": "Lunch",
+    "amount": 250.0,
+    "type": "expense",
+    "category": "Food",
+    "date": "2025-01-15",
+}
+
+
+# ---------- Fixtures ----------
+@pytest.fixture(autouse=True)
+def fresh_database():
+    """Every test starts with empty tables."""
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
+@pytest.fixture
+def auth_headers():
+    """Register + login a test user and return the Authorization header."""
+    client.post(
+        "/auth/register",
+        json={"username": "testuser", "email": "test@example.com", "password": "secret123"},
+    )
+    response = client.post("/auth/login", data={"username": "testuser", "password": "secret123"})
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+def create_sample(headers):
+    return client.post("/transactions", json=SAMPLE_TRANSACTION, headers=headers).json()
+
+
+# ---------- 1. Create transaction test ----------
+def test_create_transaction(auth_headers):
+    response = client.post("/transactions", json=SAMPLE_TRANSACTION, headers=auth_headers)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Lunch"
+    assert data["amount"] == 250.0
+    assert data["type"] == "expense"
+    assert "id" in data
+
+
+# ---------- 2. Get all transactions test ----------
+def test_get_all_transactions(auth_headers):
+    create_sample(auth_headers)
+    create_sample(auth_headers)
+    response = client.get("/transactions", headers=auth_headers)
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+# ---------- 3. Get specific transaction test ----------
+def test_get_specific_transaction(auth_headers):
+    created = create_sample(auth_headers)
+    response = client.get(f"/transactions/{created['id']}", headers=auth_headers)
+    assert response.status_code == 200
+    assert response.json()["id"] == created["id"]
+    assert response.json()["title"] == "Lunch"
+
+
+# ---------- 4. Update transaction test ----------
+def test_update_transaction(auth_headers):
+    created = create_sample(auth_headers)
+    response = client.put(
+        f"/transactions/{created['id']}",
+        json={"title": "Dinner", "amount": 500},
+        headers=auth_headers,
+    )
+    assert response.status_code == 200
+    assert response.json()["title"] == "Dinner"
+    assert response.json()["amount"] == 500
+
+
+# ---------- 5. Delete transaction test ----------
+def test_delete_transaction(auth_headers):
+    created = create_sample(auth_headers)
+    response = client.delete(f"/transactions/{created['id']}", headers=auth_headers)
+    assert response.status_code == 200
+    assert "deleted" in response.json()["message"]
+
+    # it should be gone now -> 404
+    response = client.get(f"/transactions/{created['id']}", headers=auth_headers)
+    assert response.status_code == 404
+
+
+# ---------- Bonus: routes are protected ----------
+def test_unauthorized_access():
+    response = client.get("/transactions")
+    assert response.status_code == 401
+</script>
+
+<script type="text/plain" data-file="requirements.txt">
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic[email]
+pyjwt
+bcrypt
+python-multipart
+python-dotenv
+pytest
+httpx
+</script>
+
+<script type="text/plain" data-file="pytest.ini">
+[pytest]
+pythonpath = .
+testpaths = tests
+</script>
+
+<script type="text/plain" data-file=".env.example">
+# Copy this file to ".env" and fill in your own values.
+# PostgreSQL connection string (Render / Neon / Supabase / local)
+DATABASE_URL=postgresql://username:password@host:5432/database_name
+
+# Any long random string, used to sign the JWT tokens
+SECRET_KEY=replace-with-a-long-random-secret
+</script>
+
+<script type="text/plain" data-file=".gitignore">
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.db
+.pytest_cache/
+</script>
+
+<script type="text/plain" data-file="README.md">
+# Expense Tracker API — Module 16 Mid Term
+
+A simple **Personal Expense Tracker REST API** built with FastAPI.
+Users can register, log in and manage **only their own** income & expense records.
+
+**Live URL:** https://YOUR-APP-NAME.onrender.com/docs  (replace after deploying)
+
+## Tech Stack
+
+| Part           | Tool                         |
+|----------------|------------------------------|
+| Framework      | FastAPI                      |
+| ORM / Database | SQLAlchemy + PostgreSQL      |
+| Validation     | Pydantic                     |
+| Authentication | JWT (PyJWT) + bcrypt hashing |
+| Testing        | Pytest + FastAPI TestClient  |
+| Hosting        | Render                       |
+
+## Project Structure
+
+```
+expense_tracker/
+├── main.py                   # FastAPI app, includes routers, creates tables
+├── database.py               # Engine, SessionLocal, Base, get_db dependency
+├── models.py                 # SQLAlchemy models: User, Transaction
+├── schemas.py                # Pydantic request / response models
+├── security.py               # Password hashing, JWT create/verify, get_current_user
+├── routers/
+│   ├── __init__.py
+│   ├── auth.py               # POST /auth/register, POST /auth/login
+│   └── transactions.py       # CRUD + filter for /transactions
+├── tests/
+│   └── test_transactions.py  # 6 pytest test cases
+├── requirements.txt
+├── pytest.ini
+├── .env.example
+└── README.md
+```
+
+## Run Locally
+
+```bash
+# 1. clone & enter the project
+git clone https://github.com/YOUR-USERNAME/expense-tracker-api.git
+cd expense-tracker-api
+
+# 2. create & activate a virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS / Linux
+
+# 3. install dependencies
+pip install -r requirements.txt
+
+# 4. create a .env file (copy .env.example) and set:
+#    DATABASE_URL=postgresql://user:password@host:5432/dbname
+#    SECRET_KEY=any-long-random-string
+
+# 5. start the server
+uvicorn main:app --reload
+```
+
+Open http://127.0.0.1:8000/docs
+
+> No PostgreSQL yet? If `DATABASE_URL` is not set the app falls back to a local
+> SQLite file (`expense_tracker.db`) so you can still try everything.
+
+## Run Tests
+
+```bash
+pytest -v
+```
+
+The tests use a local SQLite file (`test.db`), so your real database is never touched.
+
+## API Endpoints
+
+| Method | Endpoint                        | Auth | Description                          |
+|--------|---------------------------------|------|--------------------------------------|
+| POST   | /auth/register                  | ✗    | Register a new user                  |
+| POST   | /auth/login                     | ✗    | Login → returns JWT access token     |
+| POST   | /transactions                   | ✓    | Create a transaction                 |
+| GET    | /transactions                   | ✓    | Get all my transactions              |
+| GET    | /transactions/filter            | ✓    | Filter by type / category / amount   |
+| GET    | /transactions/{transaction_id}  | ✓    | Get one transaction                  |
+| PUT    | /transactions/{transaction_id}  | ✓    | Update a transaction                 |
+| DELETE | /transactions/{transaction_id}  | ✓    | Delete a transaction                 |
+
+Filter example:
+`/transactions/filter?type=expense&category=Food&minimum_amount=100&maximum_amount=5000`
+
+Validation rules:
+- `amount` must be a positive number
+- `type` must be `"income"` or `"expense"`
+- a user can only see / update / delete **their own** transactions (otherwise 404)
+
+## How to Test in Swagger UI (/docs)
+
+1. **POST /auth/register** with body
+   `{"username": "alice", "email": "alice@mail.com", "password": "secret123"}`
+2. Click the green **Authorize** button (top-right), enter the same username & password
+   and press Authorize. Swagger calls **POST /auth/login** for you and stores the JWT.
+3. Now call any **/transactions** endpoint. Example body for POST / PUT:
+
+```json
+{
+  "title": "Lunch",
+  "amount": 250,
+  "type": "expense",
+  "category": "Food",
+  "date": "2025-01-15"
+}
+```
+
+Using the token manually (Postman, curl): add the header
+`Authorization: Bearer <access_token>`
+
+## Deploy on Render
+
+1. Push the project to a **GitHub** repository.
+2. Create a free PostgreSQL database (Render → New → PostgreSQL, or Neon / Supabase)
+   and copy its connection URL.
+3. Render → **New → Web Service** → connect your repo.
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. Add **Environment Variables**:
+   - `DATABASE_URL` = your PostgreSQL URL
+   - `SECRET_KEY`   = a long random string
+   - (optional) `PYTHON_VERSION` = `3.12.7`
+5. Click **Deploy** and open `https://your-app.onrender.com/docs`
+</script>
+
+<!-- ===== Page script ===== -->
+<script>
+(function () {
+  const FILES = [
+    { path: 'main.py',                    lang: 'python',    desc: 'FastAPI app — creates the tables and includes the routers' },
+    { path: 'database.py',                lang: 'python',    desc: 'SQLAlchemy engine, SessionLocal, Base and the get_db dependency' },
+    { path: 'models.py',                  lang: 'python',    desc: 'User & Transaction tables with a one-to-many relationship' },
+    { path: 'schemas.py',                 lang: 'python',    desc: 'Pydantic validation: amount > 0, type = income | expense, no hashed_password in responses' },
+    { path: 'security.py',                lang: 'python',    desc: 'bcrypt password hashing, JWT create / decode, get_current_user dependency' },
+    { path: 'routers/__init__.py',        lang: 'python',    desc: 'Empty file — makes "routers" a Python package' },
+    { path: 'routers/auth.py',            lang: 'python',    desc: 'POST /auth/register and POST /auth/login' },
+    { path: 'routers/transactions.py',    lang: 'python',    desc: 'JWT-protected CRUD + GET /transactions/filter (ownership checks + 404s)' },
+    { path: 'tests/test_transactions.py', lang: 'python',    desc: '6 Pytest test cases using a local SQLite test database' },
+    { path: 'requirements.txt',           lang: 'plaintext', desc: 'All dependencies (pip install -r requirements.txt)' },
+    { path: 'pytest.ini',                 lang: 'ini',       desc: 'Lets pytest import main.py from the project root' },
+    { path: '.env.example',               lang: 'ini',       desc: 'Copy to .env and fill in DATABASE_URL and SECRET_KEY' },
+    { path: '.gitignore',                 lang: 'plaintext', desc: 'Keeps .env, venv and .db files out of GitHub' },
+    { path: 'README.md',                  lang: 'markdown',  desc: 'Setup, usage and Render deployment guide' },
+  ];
+
+  const TREE = [
+    { folder: 'expense_tracker/', files: ['main.py', 'database.py', 'models.py', 'schemas.py', 'security.py'] },
+    { folder: 'routers/', nested: true, files: ['routers/__init__.py', 'routers/auth.py', 'routers/transactions.py'] },
+    { folder: 'tests/', nested: true, files: ['tests/test_transactions.py'] },
+    { folder: 'config & docs', files: ['requirements.txt', 'pytest.ini', '.env.example', '.gitignore', 'README.md'] },
+  ];
+
+  const byPath = Object.fromEntries(FILES.map(f => [f.path, f]));
+
+  function getContent(path) {
+    const el = document.querySelector('script[type="text/plain"][data-file="' + path + '"]');
+    if (!el) return '';
+    let txt = el.textContent.replace(/^\r?\n/, '');
+    if (txt.length && !txt.endsWith('\n')) txt += '\n';
+    return txt;
+  }
+
+  // ----- toast -----
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1600);
+  }
+
+  // ----- clipboard -----
+  async function copyText(text, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    showToast(label || 'Copied!');
+  }
+
+  // ----- file tree -----
+  const tree = document.getElementById('file-tree');
+  const select = document.getElementById('file-select');
+
+  TREE.forEach(group => {
+    const h = document.createElement('div');
+    h.className = 'mono text-[11px] uppercase tracking-wider text-slate-400 px-2 pt-3 pb-1' + (group.nested ? ' pl-4' : '');
+    h.textContent = group.folder;
+    tree.appendChild(h);
+
+    group.files.forEach(p => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'file-btn mono' + (group.nested ? ' pl-6' : '');
+      b.dataset.path = p;
+      b.textContent = p.split('/').pop();
+      b.addEventListener('click', () => showFile(p));
+      tree.appendChild(b);
+
+      const o = document.createElement('option');
+      o.value = p;
+      o.textContent = p;
+      select.appendChild(o);
+    });
+  });
+  select.addEventListener('change', e => showFile(e.target.value));
+
+  // ----- viewer -----
+  let current = null;
+  function showFile(path) {
+    current = path;
+    const f = byPath[path];
+    const content = getContent(path);
+
+    document.getElementById('file-name').textContent = path;
+    document.getElementById('file-desc').textContent = f.desc;
+    document.getElementById('file-lines').textContent = content ? (content.split('\n').length - 1) + ' lines' : 'empty file';
+
+    const pre = document.getElementById('code-pre');
+    pre.innerHTML = '';
+    const code = document.createElement('code');
+    code.className = 'language-' + f.lang;
+    code.textContent = content || '# (this file is intentionally empty)\n';
+    pre.appendChild(code);
+    if (window.hljs) { try { hljs.highlightElement(code); } catch (e) {} }
+
+    tree.querySelectorAll('.file-btn').forEach(b => b.classList.toggle('active', b.dataset.path === path));
+    select.value = path;
+  }
+
+  document.getElementById('copy-file').addEventListener('click', () => {
+    if (current) copyText(getContent(current), current + ' copied!');
+  });
+
+  document.getElementById('download-file').addEventListener('click', () => {
+    if (!current) return;
+    const blob = new Blob([getContent(current)], { type: 'text/plain;charset=utf-8' });
+    triggerDownload(blob, current.split('/').pop());
+  });
+
+  function triggerDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // ----- zip download -----
+  async function downloadZip() {
+    if (!window.JSZip) {
+      alert('The zip library could not be loaded. Please use the Copy / Download buttons on each file instead.');
+      return;
+    }
+    const zip = new JSZip();
+    const root = zip.folder('expense_tracker');
+    FILES.forEach(f => root.file(f.path, getContent(f.path)));
+    const blob = await zip.generateAsync({ type: 'blob' });
+    triggerDownload(blob, 'expense_tracker.zip');
+    showToast('expense_tracker.zip downloaded');
+  }
+  document.querySelectorAll('.zip-trigger').forEach(b => b.addEventListener('click', downloadZip));
+
+  // ----- copy buttons for command blocks -----
+  document.querySelectorAll('.copy-cmd').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.parentElement.querySelector('.cmd');
+      copyText(pre.textContent);
+    });
+  });
+
+  // initial file
+  showFile('main.py');
+})();
+</script>
+</body>
+</html>
